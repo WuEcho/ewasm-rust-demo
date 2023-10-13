@@ -84,7 +84,7 @@ __有关 Rust 更多内容请参考：__
 https://www.rust-lang.org/zh-CN/learn/get-started
 
 
-##WASM 样例合约 
+## WASM 样例合约 
 
 此步骤之前请确保合约开发环境已经安装完成，我们接下来会用到 `cargo` 创建合约，
 使用 `wasm-pack` 来编译合约，使用 `chisel` 对合约进行后期处理
@@ -318,9 +318,10 @@ $> chisel run
 
 以上步骤将在 `/Users/wuxinyang/Desktop/MyGo/src/rust` 目录中得到 `hello_wasm_bg.wasm` 文件，接下来我们去链上部署这份合约
 
-### 哨兵合约
+### 哨兵合约示例
 
-https://github.com/ewasm/sentinel-rs
+ rust代码 https://github.com/ewasm/sentinel-rs
+ solodity代码 https://github.com/ewasm/sentinel-governance
 
 ### 部署以及调用
 
@@ -398,5 +399,6 @@ func TestCall(t *testing.T) {
 
 }
 ```
+
 
 
