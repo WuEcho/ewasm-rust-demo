@@ -322,4 +322,81 @@ $> chisel run
 
 https://github.com/ewasm/sentinel-rs
 
+### 部署以及调用
+
+以构造交易体并发送交易给链上的方式进行部署，构造交易的代码如下：
+
+```go
+import (
+"github.com/ethereum/go-ethereum/ethclient"
+"github.com/ethereum/go-ethereum/core/types"
+"github.com/ethereum/go-ethereum/common"
+"testing"
+"io/ioutil"
+"encoding/hex"
+)
+func TestDeploy(t *testing.T) {
+	fp := "/Users/wuxinyang/Desktop/MyGo/src/rust/hello-wasm/pkg/hello_wasm_bg.wasm"
+	ctx := context.Background()
+	code, err := ioutil.ReadFile(fp)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(code)
+	t.Log(hex.EncodeToString(code))
+	client, err := ethclient.Dial(ipc)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	nonce, err := client.PendingNonceAt(ctx, addr)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	tx, _ := types.SignTx(
+		types.NewContractCreation(
+			nonce,
+			new(big.Int),
+			11826015,                                          //gasLimit
+			new(big.Int).Mul(big.NewInt(1e9), big.NewInt(18)), // gasPrice
+			code),
+		signer,
+		prvKey)
+	t.Log(nonce, tx)
+	err = client.SendTransaction(ctx, tx)
+	t.Log(err, len(code), tx.Hash().Hex())
+}
+
+//调用方法
+func TestCall(t *testing.T) {
+	to := common.HexToAddress("0xda3df11d916ffba3a1289cef66a7f142ec5d0f76")
+	ctx := context.Background()
+	client, err := ethclient.Dial(ipc)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	nonce, err := client.PendingNonceAt(ctx, addr)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	_tx := types.NewTransaction(
+		nonce,
+		to,
+		big.NewInt(1),
+		params.GenesisGasLimit,                            // gasLimit
+		new(big.Int).Mul(big.NewInt(1e9), big.NewInt(18)), // gasPrice
+		[]byte("put:helloworld,wuecho@163.com"))
+	//get:helloworld
+	tx, _ := types.SignTx(_tx, signer, prvKey)
+	t.Log(nonce, tx)
+	err = client.SendTransaction(ctx, tx)
+	t.Log(err, tx.Hash().Hex())
+
+}
+```
+
 
